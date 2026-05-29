@@ -1,0 +1,41 @@
+* [Name of the game]
+
+Tema principale: Art Block
+
+Differentiators:
+- Salt and pepper
+- MS paint
+- Low Poly
+
+** Tema
+
+Artista/artigiano che dipinge e non riesce a dipingere piu'. Va a dormire. Durante la notte, arrivano delle entita' sovrannaturali, folletti *(NON ESCONO DAI DIPINTI)*, escono dagli anfratti per giocare nella sua casa, sulle sue tele. Mentre giocano creano un dipinto, che spesso fa cagare. La mattina, i folletti spariscono e il bro si sveglia e vede l'immondo dipinto da loro creato. Quindi, ha la motivazione per farlo meglio.
+
+** Stile
+
+- Pixel art, sprite 32x32 per i portrait
+- Cut scene ok piu' dettagliate
+
+** Brainstorming
+
+- *SPIRIT ISLAND*: puoi prevedere cosa fanno i cattivi (poca randomicita').
+  Dividere la griglia in un numero di quadranti
+  Nei quadranti succedono le robe tipo SA: distruggere (colorare), costruire (nuovi pupini) e esplorare (prossima area in cui succederanno cose)
+  Per vincere si deve resistere un certo numero di turni
+  
+** TODO Gameplay [0/6]
+
+- Immagine stile nonogram di sfondo
+- Dall'alto cadono dei "gavettoni di colore"
+- Il giocatore deve cliccare sul gavettone al momento giusto per colorare un quadrato dell'immagine
+- Gavettoni di colori diversi, l'immagine ha piu' colori
+- I gavettoni cadono a velocita' diverse (magari si possono avere hint sui prossimi punti in cui cadono)
+- Sfida a tempo, bisogna completare l'immagine o una certa percentuale
+  
+*** TODO Mostrare la griglia
+**** TODO Mostrare la griglia sopra uno sfondo
+*** TODO Rendere la griglia cliccabile
+*** TODO Far cadere i gavettoni
+*** TODO Colorare la griglia quando si clicca
+*** TODO Implementare il "tiro caricato"
+*** TODO Mostrare il mirino sul cursore
