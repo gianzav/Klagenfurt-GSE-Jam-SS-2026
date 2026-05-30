@@ -13,7 +13,7 @@ function Button.new(label, x, y, width, height)
 end
 
 function Button:draw()
-   love.graphics.push()
+   love.graphics.push("all")
    love.graphics.setColor(0.8, 0.8, 0.8) -- Light gray color
    love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
    love.graphics.setColor(0, 0, 0) -- Black color for text

@@ -37,3 +37,24 @@ end
 function Ball:getY()
    return self.body:getY()
 end
+
+
+function generateBall(world, x, y, colors)
+   local ballRadius = 25
+   
+   -- Create a Body for the circle
+   body = love.physics.newBody(world, x+ballRadius, y, "dynamic")
+   
+   -- Attatch a shape to the body.
+   circle_shape = love.physics.newCircleShape(0,0,25)
+   
+   -- Create fixture between body and shape
+   fixture = love.physics.newFixture(body, circle_shape)
+
+   -- Calculate the mass of the body based on attatched shapes.
+   -- This gives realistic simulations.
+   body:setMassData(circle_shape:computeMass( 1 ))
+   randomColor = math.random(1, #colors)
+   ball = Ball.new(colors[randomColor], 25, body)
+   return ball
+end
