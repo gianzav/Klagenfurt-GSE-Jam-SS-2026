@@ -1,6 +1,7 @@
 require("button")
 require("grid")
 require("ball")
+Talkies = require("talkies")
 
 function love.load()
    -- General config
@@ -17,10 +18,8 @@ function love.load()
    gridXOffset, gridYOffset = canvasWidth/2-gridPixelWidth/2, canvasHeight/2-gridPixelHeight/2
 
 
-   -- color buttons for edit mode
-   
-   grid = Grid.new(gridXOffset, gridYOffset, 8, 8, 50)
-   ball = Ball.new({r=1, g=1, b=1, a=1}, 50, 50, 16)
+   -- grid = Grid.new(gridXOffset, gridYOffset, 8, 8, 50)
+   grid = Grid.loadFromFile("src/assets/blue.grid")
 
    cursorImage = love.graphics.newImage("src/assets/mirino.png", {dpiscale=2})
    love.mouse.setVisible(false)
@@ -56,6 +55,10 @@ function love.load()
 
    -- Buttons
    saveButton = Button.new("Save", 0,   550, 200, 50)
+   saveButton:registerCallback(function (self)
+	 grid:saveToFile(os.date("%d-%m-%Y-%H-%M") .. ".grid")
+   end)
+   
    editButton = Button.new("Edit", 200, 550, 200, 50)
    playButton = Button.new("Play", 400, 550, 200, 50)
    playButton:registerCallback(function (self)
@@ -80,13 +83,17 @@ function love.load()
    white = {r=1,g=1,b=1,a=1}
    editingColor = white
    colorButtons = {}
+   deleteButton = Button.new("clear", 50, 50, 50, 50, {r=0.9,g=0.9,b=0.9,a=1})
+   
    for i,color in pairs(colors) do
-      b = Button.new(nil, 50, i*50, 50, 50, color) -- colored buttons
+      b = Button.new(nil, 50, (i+1)*50, 50, 50, color) -- colored buttons
       b:registerCallback(function (self)
 	    editingColor = color
       end)
       table.insert(colorButtons, b)
    end
+
+
 end
 
 function love.update(dt)
@@ -145,11 +152,18 @@ function love.mousepressed(x, y, button, istouch, presses)
 	    end
 	 end
 
-	 grid:addReferenceCell(x,y,editingColor)
+	 if deleteButton:isClicked(x,y) then
+	    grid:deleteReferenceCell(x,y)
+	 else
+	    grid:addReferenceCell(x,y,editingColor)
+	 end
+	 
+	 if saveButton:isClicked(x,y) then
+	    saveButton:runCallbacks()
+	 end
       end
    end
 end
-
 
 function love.draw()
    for _,button in pairs(buttons) do
@@ -160,6 +174,8 @@ function love.draw()
       for _,button in pairs(colorButtons) do
 	 button:draw()
       end
+
+      deleteButton:draw()
    end
    
    grid:draw()
@@ -173,4 +189,5 @@ function love.draw()
       -- Draw image on mouse cursor
       love.graphics.draw(cursorImage, love.mouse.getX()-cursorImage:getHeight()/2, love.mouse.getY()-cursorImage:getWidth()/2)
    end
+
 end
