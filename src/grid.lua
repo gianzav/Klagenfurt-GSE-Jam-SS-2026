@@ -21,11 +21,20 @@ function Grid.new(x, y, width, height, cellSize)
 
    self.referenceCells = {}
    for i = 1,height do
-      self.grid[i] = {}
+      self.referenceCells[i] = {}
       for j = 1,width do
-	 self.grid[i][j] = {r=1,g=1,b=1,a=1}
+	 self.referenceCells[i][j] = nil
       end
-   end   
+   end
+
+   -- Flag to know if the cell was colored during gameplay
+   self.coloredByPlayer = {}
+   for i = 1,height do
+      self.coloredByPlayer[i] = {}
+      for j = 1,width do
+	 self.coloredByPlayer[i][j] = false
+      end
+   end
    
    return self
 end
@@ -37,16 +46,27 @@ function Grid:draw()
 
    love.graphics.translate(self.x, self.y)
    love.graphics.setBlendMode("alpha")
-   
+
+   love.graphics.push("all")
    -- Put cells on canvas
    for i = 1,self.width do
       for j = 1,self.height do
 	 color = self.grid[i][j]
-	 love.graphics.setColor(color["r"], color["g"] , color["b"])
+	 reference = self.referenceCells[i][j]
+	 
+	 -- if the cell was colored
+	 if self.coloredByPlayer[i][j] then
+	    love.graphics.setColor(color.r, color.g, color.b)
+	 elseif not self.coloredByPlayer[i][j] and reference then
+	    love.graphics.setColor(reference.r, reference.g, reference.b, 0.5)
+	 else
+	    love.graphics.setColor(color.r, color.g, color.b)
+	 end
 	 love.graphics.rectangle("fill", (i-1)*self.cellSize, (j-1)*self.cellSize, self.cellSize, self.cellSize)
       end
    end
-
+   
+   love.graphics.pop()
    love.graphics.setColor(0, 0, 0, 1) -- black lines
 
    pixelWidth = self.cellSize * self.width
@@ -92,7 +112,6 @@ function Grid:addReferenceCell(x,y,color)
    if squareX >= 1 and squareX <= self.height and
       squareY >= 1 and squareY <= self.width then
       
-      color["a"] = 0.5
       self.referenceCells[squareX][squareY] = color
    end
 end

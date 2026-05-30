@@ -17,7 +17,6 @@ function love.load()
    gridXOffset, gridYOffset = canvasWidth/2-gridPixelWidth/2, canvasHeight/2-gridPixelHeight/2
 
 
-
    -- color buttons for edit mode
    
    grid = Grid.new(gridXOffset, gridYOffset, 8, 8, 50)
@@ -51,7 +50,6 @@ function love.load()
    -- time in seconds after which a new ball spawns
    ballSpawnThreshold = 1
 
-
    -- gameMode may be one of {"play", "pause", "edit"}
    gameMode = "edit"
    -- Game objects
@@ -82,6 +80,13 @@ function love.load()
    white = {r=1,g=1,b=1,a=1}
    editingColor = white
    colorButtons = {}
+   for i,color in pairs(colors) do
+      b = Button.new(nil, 50, i*50, 50, 50, color) -- colored buttons
+      b:registerCallback(function (self)
+	    editingColor = color
+      end)
+      table.insert(colorButtons, b)
+   end
 end
 
 function love.update(dt)
@@ -134,22 +139,34 @@ function love.mousepressed(x, y, button, istouch, presses)
 	    end
 	 end
       elseif gameMode == "edit" then
-	 print("ciao")
+	 for _,button in pairs(colorButtons) do
+	    if button:isClicked(x,y) then
+	       button:runCallbacks()
+	    end
+	 end
+
+	 grid:addReferenceCell(x,y,editingColor)
       end
    end
 end
 
 
 function love.draw()
-   editButton:draw()
-   playButton:draw()
-   saveButton:draw()
+   for _,button in pairs(buttons) do
+      button:draw()
+   end
+
+   if gameMode == "edit" then
+      for _,button in pairs(colorButtons) do
+	 button:draw()
+      end
+   end
    
    grid:draw()
    
    -- Draw the circle.
    for _,ball in pairs(balls) do
-     ball:draw()
+      ball:draw()
    end
 
    if gameMode == "play" then
