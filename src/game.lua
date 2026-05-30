@@ -28,25 +28,21 @@ function love.load()
 
 
    -- One meter is 32px in physics engine
-   love.physics.setMeter( 32 )
+   meter = 32
+   love.physics.setMeter(meter)
 
-   -- Create a world with standard gravity
-   world = love.physics.newWorld(0, 9.81*32, true)
-
-   -- Create the ground body at (0, 0) static
-   ground = love.physics.newBody(world, 0, 0, "static")
+   -- Create a world for each grid column
+   fallColumns = {}
+   for i=1,gridDim do
+      local speedup = 0.5
+      table.insert(fallColumns, love.physics.newWorld(0, 9.81*meter*speedup, true))
+   end
    
-   -- Create the ground shape at (400,500) with size (600,10).
-   ground_shape = love.physics.newRectangleShape(gridPixelWidth, gridPixelHeight+gridYOffset, 600, 0)
-
-   -- Create fixture between body and shape
-   ground_fixture = love.physics.newFixture(ground, ground_shape)
-
    ballRadius = 25
    bodies = {}
    for i=1,gridDim do
       -- Create a Body for the circle
-      body = love.physics.newBody(world, (i-1)*50+gridXOffset+ballRadius, gridYOffset, "dynamic")
+      body = love.physics.newBody(fallColumns[i], (i-1)*50+gridXOffset+ballRadius, gridYOffset, "dynamic")
       
       -- Attatch a shape to the body.
       circle_shape = love.physics.newCircleShape(0,0,25)
@@ -56,7 +52,7 @@ function love.load()
 
       -- Calculate the mass of the body based on attatched shapes.
       -- This gives realistic simulations.
-      body:setMassData(circle_shape:computeMass( math.random(1,10) ))
+      body:setMassData(circle_shape:computeMass( 1 ))
       table.insert(bodies, body)
    end
    
@@ -69,7 +65,9 @@ function love.load()
 end
 
 function love.update(dt)
-   world:update(dt)
+   for _,column in pairs(fallColumns) do
+      column:update(dt)
+   end
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
@@ -78,7 +76,13 @@ function love.mousepressed(x, y, button, istouch, presses)
 	 saveButton:runCallbacks()
       end
 
-      grid:selectCell(x,y)
+      for k,body in pairs(bodies) do
+	 if x >= body:getX()-25 and x <= body:getX()+25 and
+	    y >= body:getY()-25 and y <= body:getY()+25 then
+	    grid:selectCell(x,y)
+	    bodies[k] = nil
+	 end
+      end
 
       -- show elf on the clicked point
    end
@@ -88,9 +92,6 @@ function love.draw()
    saveButton:draw()
    grid:draw()
    -- ball:draw()
-
-   -- Draws the ground.
-   love.graphics.polygon("line", ground:getWorldPoints(ground_shape:getPoints()))
 
    -- Draw the circle.
    for _,body in pairs(bodies) do
