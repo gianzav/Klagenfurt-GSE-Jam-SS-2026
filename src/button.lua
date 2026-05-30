@@ -13,10 +13,12 @@ function Button.new(label, x, y, width, height)
 end
 
 function Button:draw()
-    love.graphics.setColor(0.8, 0.8, 0.8) -- Light gray color
-    love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
-    love.graphics.setColor(0, 0, 0) -- Black color for text
-    love.graphics.printf(self.label, self.x, self.y + (self.height / 4), self.width, "center")
+   love.graphics.push()
+   love.graphics.setColor(0.8, 0.8, 0.8) -- Light gray color
+   love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
+   love.graphics.setColor(0, 0, 0) -- Black color for text
+   love.graphics.printf(self.label, self.x, self.y + (self.height / 4), self.width, "center")
+   love.graphics.pop()
 end
 
 function Button:isClicked(mx, my)

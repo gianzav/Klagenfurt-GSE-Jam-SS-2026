@@ -24,9 +24,9 @@ end
 
 
 function Grid:draw()
-   local gridLines = {}
-   love.graphics.setCanvas()
    love.graphics.push()
+   local gridLines = {}
+
    love.graphics.translate(self.x, self.y)
    love.graphics.clear(1, 1, 1, 1)
 
@@ -69,7 +69,6 @@ function Grid:draw()
       love.graphics.line(line)
    end
    
-   -- love.graphics.draw(canvas, 0, 0)
    love.graphics.pop() -- restore previous coordinate system
 end
 

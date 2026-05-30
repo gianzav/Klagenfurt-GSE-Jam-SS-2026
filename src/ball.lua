@@ -13,8 +13,10 @@ end
 
 
 function Ball:draw()
-    love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a) -- Light gray color
-    love.graphics.circle("fill", self.x, self.y, self.radius)
+   love.graphics.push()
+   love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a) -- Light gray color
+   love.graphics.circle("fill", self.x, self.y, self.radius)
+   love.graphics.pop()
 end
 
 function Ball:isClicked(mx, my)
