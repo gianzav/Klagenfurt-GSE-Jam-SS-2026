@@ -15,7 +15,8 @@ end
 function Ball:draw()
    love.graphics.push("all")
    if self.sprite then
-      love.graphics.draw(self.sprite, self:getX(), self:getY())
+      love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a) -- Light gray color
+      love.graphics.draw(self.sprite, self:getX()-self.sprite:getWidth()/2, self:getY()-self.sprite:getHeight()/2)
    else
       love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a) -- Light gray color
       love.graphics.circle("fill", self:getX(), self:getY(), self.radius)

@@ -30,7 +30,7 @@ function love.load()
    cursorImage = love.graphics.newImage("src/assets/mirino.png", {dpiscale=2})
    backgroundImage = love.graphics.newImage("src/assets/canva.png", {dpiscale=0.75})
    endingImage = love.graphics.newImage("src/assets/ResultScreen.png", {dpiscale=0.75})
-   ballImage = love.graphics.newImage("src/assets/goccia.png", {dpiscale=4})
+   ballImage = love.graphics.newImage("src/assets/goccia-bw.png", {dpiscale=3})
    
    font = love.graphics.newFont("src/assets/fonts/Undak-KVA3y.otf", 24)
    love.graphics.setFont(font)
