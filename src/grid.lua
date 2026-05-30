@@ -18,6 +18,14 @@ function Grid.new(x, y, width, height, cellSize)
 	 self.grid[i][j] = {r=1,g=1,b=1,a=1}
       end
    end
+
+   self.referenceCells = {}
+   for i = 1,height do
+      self.grid[i] = {}
+      for j = 1,width do
+	 self.grid[i][j] = {r=1,g=1,b=1,a=1}
+      end
+   end   
    
    return self
 end
@@ -75,5 +83,16 @@ function Grid:selectCell(x,y,color)
       squareY >= 1 and squareY <= self.width then
 
       self.grid[squareX][squareY] = color
+   end
+end
+
+function Grid:addReferenceCell(x,y,color)
+   local squareX = math.floor((x-self.x) / self.cellSize) + 1
+   local squareY = math.floor((y-self.y) / self.cellSize) + 1
+   if squareX >= 1 and squareX <= self.height and
+      squareY >= 1 and squareY <= self.width then
+      
+      color["a"] = 0.5
+      self.referenceCells[squareX][squareY] = color
    end
 end
