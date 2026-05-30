@@ -105,7 +105,9 @@ function Grid:selectCell(x,y,color)
       squareY >= 1 and squareY <= self.width then
       self.coloredByPlayer[squareX][squareY] = true
       self.grid[squareX][squareY] = color
+      return true
    end
+   return false
 end
 
 function Grid:addReferenceCell(x,y,color)
@@ -115,8 +117,10 @@ function Grid:addReferenceCell(x,y,color)
       if squareX >= 1 and squareX <= self.height and
 	 squareY >= 1 and squareY <= self.width then
 	 self.referenceCells[squareX][squareY] = color
+	 return true
       end
    end
+   return false
 end
 
 function Grid:deleteReferenceCell(x,y)
@@ -128,11 +132,14 @@ function Grid:deleteReferenceCell(x,y)
       self.referenceCells[squareX][squareY] = nil
       self.coloredByPlayer[squareX][squareY] = false
       self.grid[squareX][squareY] = {r=1,g=1,b=1,a=1}
+      return true
    end
+   return false
 end
 
+
 function Grid:saveToFile(filename)
-   table.save(self, filename)
+   return table.save(self, filename)
 end
 
 function Grid.loadFromFile(filename)
@@ -144,3 +151,7 @@ function Grid.loadFromFile(filename)
    return g
 end
 
+
+function Grid:getCellFromCoordinates(x,y)
+   return math.floor((x-self.x) / self.cellSize) + 1, math.floor((y-self.y) / self.cellSize) + 1
+end
