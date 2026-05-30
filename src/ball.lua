@@ -1,20 +1,25 @@
 Ball = {}
 Ball.__index = Ball
 
-function Ball.new(color, radius, body)
-   -- color given as table {r,g,b,a}
+function Ball.new(color, radius, body, sprite)
+   -- color given as table {r,g,b,a}. sprite is optional
     local self = setmetatable({}, Ball)
     self.radius = radius
     self.color = color
     self.body = body
+    self.sprite = sprite
     return self
 end
 
 
 function Ball:draw()
    love.graphics.push("all")
-   love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a) -- Light gray color
-   love.graphics.circle("fill", self:getX(), self:getY(), self.radius)
+   if self.sprite then
+      love.graphics.draw(self.sprite, self:getX(), self:getY())
+   else
+      love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a) -- Light gray color
+      love.graphics.circle("fill", self:getX(), self:getY(), self.radius)
+   end
    love.graphics.pop()
 end
 
@@ -39,7 +44,7 @@ function Ball:getY()
 end
 
 
-function generateBall(world, x, y, colors)
+function generateBall(world, x, y, colors, sprite)
    local ballRadius = 25
    
    -- Create a Body for the circle
@@ -55,6 +60,6 @@ function generateBall(world, x, y, colors)
    -- This gives realistic simulations.
    body:setMassData(circle_shape:computeMass( 1 ))
    randomColor = math.random(1, #colors)
-   ball = Ball.new(colors[randomColor], 25, body)
+   ball = Ball.new(colors[randomColor], 25, body, sprite)
    return ball
 end

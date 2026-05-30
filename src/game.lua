@@ -30,9 +30,11 @@ function love.load()
    cursorImage = love.graphics.newImage("src/assets/mirino.png", {dpiscale=2})
    backgroundImage = love.graphics.newImage("src/assets/canva.png", {dpiscale=0.75})
    endingImage = love.graphics.newImage("src/assets/ResultScreen.png", {dpiscale=0.75})
+   ballImage = love.graphics.newImage("src/assets/goccia.png", {dpiscale=4})
    
    font = love.graphics.newFont("src/assets/fonts/Undak-KVA3y.otf", 24)
    love.graphics.setFont(font)
+
 
    mainMusic = love.audio.newSource("src/assets/music/Elves (1).mp3", "static")
    mainMusic:setLooping(true)
@@ -40,6 +42,7 @@ function love.load()
 
    splatSound = love.audio.newSource("src/assets/music/TRUESplatsound.mp3", "static")
    winSound = love.audio.newSource("src/assets/music/VictorySound.mp3", "static")
+   lossSound = love.audio.newSource("src/assets/music/Loss_Jingle.mp3", "static")
       
    love.mouse.setVisible(true)
 
@@ -57,11 +60,14 @@ function love.load()
    colors = config.colors
    balls = {}
    -- timer data
-   timeElapsed = 0
+   ballSpawnElapsedTime = 0
    time = 0
    lastTime = 0
    -- time in seconds after which a new ball spawns
    ballSpawnThreshold = 0.3
+   ballSpeedupFactor = 1.1
+   ballSpeedupElapsedTime = 0
+   ballSpeedupThreshold = 1
 
    -- gameMode may be one of {"play", "pause", "edit", "delete", "win", "lose"}
    gameMode = "edit"
@@ -110,7 +116,7 @@ function love.load()
    end
 
    currentScore = 0
-   gameSeconds = 5
+   gameSeconds = 30
 
    positiveScoreFactor = 50
    lowScorePenaltyFactor = 50
@@ -124,14 +130,15 @@ function love.update(dt)
    
    if gameMode == "play" then
       love.mouse.setVisible(false)
-      
+
       for _,column in pairs(fallColumns) do
 	 column:update(dt)
       end
 
       -- generate a ball
-      time = love.timer.getTime()
       gameSeconds = gameSeconds - love.timer.getDelta()
+      ballSpawnElapsedTime = ballSpawnElapsedTime + love.timer.getDelta()
+      ballSpeedupElapsedTime = ballSpeedupElapsedTime + love.timer.getDelta()
       
       if gameSeconds <= 0 then
 	 if hasWon() then
@@ -141,25 +148,29 @@ function love.update(dt)
 	 else
 	    gameMode = "lose"
 	    mainMusic:stop()
+	    lossSound:play()
 	 end
       end
       
-      if lastTime then
-	 timeElapsed = timeElapsed + (time - lastTime)
-      else
-	 timeElapsed = 0
-      end
-      
-      if timeElapsed >= ballSpawnThreshold then
+      if ballSpawnElapsedTime >= ballSpawnThreshold then
 	 column = math.random(1,#fallColumns)
 	 table.insert(balls, generateBall(fallColumns[column],
 					  (column-1)*50+gridXOffset,
 					  gridYOffset-60,
-					  colors))
-	 timeElapsed = 0
+					  colors,
+					  ballImage))
+	 ballSpawnElapsedTime = 0
       end
 
-      lastTime = time
+      if ballSpeedupElapsedTime >= ballSpeedupThreshold then
+	 ballSpeedupElapsedTime = 0
+	 for _,column in pairs(fallColumns) do
+	    local gx, gy = column:getGravity() 
+	    column:setGravity(gx, gy*ballSpeedupFactor)
+	 end
+      end
+      
+	
    end
 end
 
@@ -184,9 +195,10 @@ function love.mousepressed(x, y, button, istouch, presses)
 		  i,j = grid:getCellFromCoordinates(x,y)
 		  -- first case: a cell with a reference color
 		  if grid.referenceCells[i][j] then
-		     if grid.referenceCells[i][j]== balls[k].color then
+		     if grid.referenceCells[i][j] == balls[k].color and grid.available[i][j] then
 			currentScore = currentScore + positiveScoreFactor
-		     else
+			grid.available[i][j] = false
+		     elseif grid.referenceCells[i][j] ~= balls[k].color then
 			currentScore = currentScore - highScorePenaltyFactor
 		     end
 		  else
@@ -225,6 +237,7 @@ end
 function love.draw()
    if gameMode == "lose" then
       love.graphics.clear(1,1,1)
+      love.graphics.draw(endingImage)
       drawCenteredText(350, 200, 50, 100, "YOU LOSE. SKILL ISSUE")
    elseif gameMode == "win" then
       love.graphics.clear(1,1,1)
@@ -287,7 +300,7 @@ function hasWon()
    maxPoints = 0
    for i=1,grid.width do
       for j=1,grid.height do
-	 if cell then
+	 if grid.referenceCells[i][j] then
 	    maxPoints = maxPoints + 1
 	 end
       end

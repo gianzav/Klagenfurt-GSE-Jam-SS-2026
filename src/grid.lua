@@ -37,6 +37,15 @@ function Grid.new(x, y, width, height, cellSize)
 	 self.coloredByPlayer[i][j] = false
       end
    end
+
+   -- signals that the cell is still available to score points to avoid double scoring
+   self.available = {} 
+      for i = 1,height do
+      self.available[i] = {}
+      for j = 1,width do
+	 self.available[i][j] = true
+      end
+   end
    
    return self
 end
