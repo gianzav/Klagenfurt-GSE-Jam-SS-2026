@@ -23,7 +23,7 @@ Artista/artigiano che dipinge e non riesce a dipingere piu'. Va a dormire. Duran
   Nei quadranti succedono le robe tipo SA: distruggere (colorare), costruire (nuovi pupini) e esplorare (prossima area in cui succederanno cose)
   Per vincere si deve resistere un certo numero di turni
   
-** TODO Gameplay [0/6]
+** TODO Gameplay [4/7]
 
 - Immagine stile nonogram di sfondo
 - Dall'alto cadono dei "gavettoni di colore"
@@ -32,10 +32,16 @@ Artista/artigiano che dipinge e non riesce a dipingere piu'. Va a dormire. Duran
 - I gavettoni cadono a velocita' diverse (magari si possono avere hint sui prossimi punti in cui cadono)
 - Sfida a tempo, bisogna completare l'immagine o una certa percentuale
   
-*** TODO Mostrare la griglia
+*** DONE Mostrare la griglia
 **** TODO Mostrare la griglia sopra uno sfondo
-*** TODO Rendere la griglia cliccabile
-*** TODO Far cadere i gavettoni
-*** TODO Colorare la griglia quando si clicca
+*** DONE Rendere la griglia cliccabile
+*** DONE Far cadere i gavettoni
+*** DONE Colorare la griglia quando si clicca
 *** TODO Implementare il "tiro caricato"
 *** TODO Mostrare il mirino sul cursore
+*** TODO Menu iniziale
+**** TODO Seleziona livello
+**** TODO Carica livello
+*** TODO Editor di livelli
+**** TODO Salvare i layout
+**** TODO Caricare i layout
