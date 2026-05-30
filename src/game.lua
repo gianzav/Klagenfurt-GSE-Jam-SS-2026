@@ -3,7 +3,6 @@ require("grid")
 require("ball")
 Talkies = require("talkies")
 
-
 config = {
    windowWidth = 800,
    windowHeight = 600,
@@ -32,7 +31,13 @@ function love.load()
    backgroundImage = love.graphics.newImage("src/assets/canva.png", {dpiscale=0.75})
    font = love.graphics.newFont("src/assets/fonts/Undak-KVA3y.otf", 24)
    love.graphics.setFont(font)
-   
+
+   mainMusic = love.audio.newSource("src/assets/music/Elves (1).mp3", "static")
+   mainMusic:setLooping(true)
+   mainMusic:play()
+
+   splatSound = love.audio.newSource("src/assets/music/Splatsound.mp3", "static")
+      
    love.mouse.setVisible(true)
 
    -- One meter is 32px in physics engine
@@ -102,6 +107,8 @@ function love.load()
    end
 
    currentScore = 0
+   gameSeconds = 60
+
    
 end
 
@@ -155,7 +162,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 	       y >= ball:getY()-25 and y <= ball:getY()+25 then
 	       
 	       selected = grid:selectCell(x,y,ball.color)
-
+	       splatSound:play()
 	       -- change the score
 	       if selected then
 		  i,j = grid:getCellFromCoordinates(x,y)
@@ -233,6 +240,7 @@ function love.draw()
    --end
    
    drawCenteredText(350, 30, 100, 50, "SCORE: " .. tostring(currentScore))
+   drawCenteredText(350, 30, 100, 50, "TIME: " .. tostring(gameSeconds))
 end
 
 function drawCenteredText(rectX, rectY, rectWidth, rectHeight, text)
