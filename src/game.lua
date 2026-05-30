@@ -6,8 +6,6 @@ Talkies = require("talkies")
 function love.load()
    -- General config
    canvasWidth, canvasHeight = 800, 600
-   -- canvas = love.graphics.newCanvas(canvasWidth, canvasHeight)
-   -- love.graphics.setCanvas()
 
    love.graphics.setBackgroundColor(1,1,1)
    love.window.setMode(800, 600, {resizable=false, vsync=0, minwidth=800, minheight=600})
@@ -17,11 +15,10 @@ function love.load()
    gridPixelWidth, gridPixelHeight = gridWidth*cellSize, gridHeigth*cellSize   
    gridXOffset, gridYOffset = canvasWidth/2-gridPixelWidth/2, canvasHeight/2-gridPixelHeight/2
 
-
    grid = Grid.new(gridXOffset, gridYOffset, 8, 8, 50)
    
    cursorImage = love.graphics.newImage("src/assets/mirino.png", {dpiscale=2})
-   love.mouse.setVisible(false)
+   love.mouse.setVisible(true)
 
    -- One meter is 32px in physics engine
    meter = 32
@@ -48,7 +45,7 @@ function love.load()
    -- time in seconds after which a new ball spawns
    ballSpawnThreshold = 1
 
-   -- gameMode may be one of {"play", "pause", "edit"}
+   -- gameMode may be one of {"play", "pause", "edit", "delete"}
    gameMode = "edit"
    -- Game objects
 
@@ -76,13 +73,14 @@ function love.load()
    end)
 
    buttons = {saveButton, editButton, playButton}
-
-
+   
    -- colorButtons for edit mode
-   white = {r=1,g=1,b=1,a=1}
-   editingColor = white
+   editingColor = nil
    colorButtons = {}
    deleteButton = Button.new("clear", 50, 50, 50, 50, {r=0.9,g=0.9,b=0.9,a=1})
+   deleteButton:registerCallback(function (self)
+	 gameMode = "delete"
+   end)
    
    for i,color in pairs(colors) do
       b = Button.new(nil, 50, (i+1)*50, 50, 50, color) -- colored buttons
@@ -96,7 +94,13 @@ function love.load()
 end
 
 function love.update(dt)
+   if gameMode ~= "play" then
+      love.mouse.setVisible(true)
+   end
+   
    if gameMode == "play" then
+      love.mouse.setVisible(false)
+      
       for _,column in pairs(fallColumns) do
 	 column:update(dt)
       end
@@ -121,11 +125,9 @@ function love.update(dt)
 
       lastTime = time
       
-   -- Mouse cursor should be visible in edit mode
-   elseif gameMode == "edit" then
-      love.mouse.setVisible(true)
    end
 end
+
 
 function love.mousepressed(x, y, button, istouch, presses)
    if button == 1 then
@@ -144,7 +146,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 	       balls[k] = nil
 	    end
 	 end
-      elseif gameMode == "edit" then
+      elseif gameMode == "edit" or gameMode == "delete" then
 	 for _,button in pairs(colorButtons) do
 	    if button:isClicked(x,y) then
 	       button:runCallbacks()
@@ -152,6 +154,10 @@ function love.mousepressed(x, y, button, istouch, presses)
 	 end
 
 	 if deleteButton:isClicked(x,y) then
+	    deleteButton:runCallbacks()
+	 end
+	 
+	 if gameMode == "delete" then
 	    grid:deleteReferenceCell(x,y)
 	 else
 	    grid:addReferenceCell(x,y,editingColor)
@@ -169,7 +175,7 @@ function love.draw()
       button:draw()
    end
 
-   if gameMode == "edit" then
+   if gameMode == "edit" or gameMode == "delete" then
       for _,button in pairs(colorButtons) do
 	 button:draw()
       end
