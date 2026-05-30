@@ -12,7 +12,7 @@ end
 
 
 function Ball:draw()
-   love.graphics.push()
+   love.graphics.push("all")
    love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a) -- Light gray color
    love.graphics.circle("fill", self:getX(), self:getY(), self.radius)
    love.graphics.pop()

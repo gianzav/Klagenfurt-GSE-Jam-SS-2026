@@ -25,7 +25,8 @@ function love.load()
    grid = Grid.new(gridXOffset, gridYOffset, 8, 8, 50)
    ball = Ball.new({r=1, g=1, b=1, a=1}, 50, 50, 16)
 
-   cursorImage = love.graphics.newImage("src/assets/elf192.192.png", {dpiscale=2})
+   cursorImage = love.graphics.newImage("src/assets/mirino.png", {dpiscale=2})
+   love.mouse.setVisible(false)
 
 
    -- One meter is 32px in physics engine
@@ -98,9 +99,9 @@ function love.draw()
    
    -- Draw the circle.
    for _,ball in pairs(balls) do
-      ball:draw()
+     ball:draw()
    end
-   
+
    -- Draw image on mouse cursor
-   -- love.graphics.draw(cursorImage, love.mouse.getX()-cursorImage:getHeight()/2, love.mouse.getY()-cursorImage:getWidth()/2)
+   love.graphics.draw(cursorImage, love.mouse.getX()-cursorImage:getHeight()/2, love.mouse.getY()-cursorImage:getWidth()/2)
 end
