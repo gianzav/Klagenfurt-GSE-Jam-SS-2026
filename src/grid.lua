@@ -10,12 +10,12 @@ function Grid.new(x, y, width, height, cellSize)
    self.height = height
    self.cellSize = cellSize
    
-   -- Initialize grid with zeroes for 'unclicked' cells
+   -- Initialize grid with white color for 'unclicked' cells
    self.grid = {}
    for i = 1,height do
       self.grid[i] = {}
       for j = 1,width do
-	 self.grid[i][j] = 0
+	 self.grid[i][j] = {r=1,g=1,b=1,a=1}
       end
    end
    
@@ -28,18 +28,13 @@ function Grid:draw()
    local gridLines = {}
 
    love.graphics.translate(self.x, self.y)
-   love.graphics.clear(1, 1, 1, 1)
-
    love.graphics.setBlendMode("alpha")
-         
+   
    -- Put cells on canvas
-   for i = 1,8 do
-      for j = 1,8 do
-	 if self.grid[i][j] == 1 then
-	    love.graphics.setColor(1, 1, 1, .5)
-	 else
-	    love.graphics.setColor(1, 0, 0, .5)
-	 end
+   for i = 1,self.width do
+      for j = 1,self.height do
+	 color = self.grid[i][j]
+	 love.graphics.setColor(color["r"], color["g"] , color["b"])
 	 love.graphics.rectangle("fill", (i-1)*self.cellSize, (j-1)*self.cellSize, self.cellSize, self.cellSize)
       end
    end
@@ -73,11 +68,12 @@ function Grid:draw()
 end
 
 
-function Grid:selectCell(x,y)
+function Grid:selectCell(x,y,color)
    local squareX = math.floor((x-self.x) / self.cellSize) + 1
    local squareY = math.floor((y-self.y) / self.cellSize) + 1
    if squareX >= 1 and squareX <= self.height and
       squareY >= 1 and squareY <= self.width then
-      self.grid[squareX][squareY] = 1
+
+      self.grid[squareX][squareY] = color
    end
 end

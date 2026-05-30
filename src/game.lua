@@ -8,6 +8,7 @@ function love.load()
    -- canvas = love.graphics.newCanvas(canvasWidth, canvasHeight)
    -- love.graphics.setCanvas()
 
+   love.graphics.setBackgroundColor(1,1,1)
    love.window.setMode(800, 600, {resizable=false, vsync=0, minwidth=800, minheight=600})
    gridDim = 8
    cellSize = 50 -- Width and height of cells.
@@ -78,10 +79,11 @@ function love.mousepressed(x, y, button, istouch, presses)
 	 saveButton:runCallbacks()
       end
 
-      for k,body in pairs(balls) do
-	 if x >= body:getX()-25 and x <= body:getX()+25 and
-	    y >= body:getY()-25 and y <= body:getY()+25 then
-	    grid:selectCell(x,y)
+      for k,ball in pairs(balls) do
+	 if x >= ball:getX()-25 and x <= ball:getX()+25 and
+	    y >= ball:getY()-25 and y <= ball:getY()+25 then
+	    
+	    grid:selectCell(x,y,ball.color)
 	    balls[k] = nil
 	 end
       end
@@ -91,10 +93,9 @@ function love.mousepressed(x, y, button, istouch, presses)
 end
 
 function love.draw()
-   saveButton:draw()
+   -- saveButton:draw()
    grid:draw()
-   -- ball:draw()
-
+   
    -- Draw the circle.
    for _,ball in pairs(balls) do
       ball:draw()
