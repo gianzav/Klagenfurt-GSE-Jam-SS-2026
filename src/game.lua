@@ -29,6 +29,8 @@ function love.load()
    --grid = Grid.loadFromFile("src/assets/layout-1.grid")
    cursorImage = love.graphics.newImage("src/assets/mirino.png", {dpiscale=2})
    backgroundImage = love.graphics.newImage("src/assets/canva.png", {dpiscale=0.75})
+   endingImage = love.graphics.newImage("src/assets/ResultScreen.png", {dpiscale=0.75})
+   
    font = love.graphics.newFont("src/assets/fonts/Undak-KVA3y.otf", 24)
    love.graphics.setFont(font)
 
@@ -36,7 +38,8 @@ function love.load()
    mainMusic:setLooping(true)
    mainMusic:play()
 
-   splatSound = love.audio.newSource("src/assets/music/Splatsound.mp3", "static")
+   splatSound = love.audio.newSource("src/assets/music/TRUESplatsound.mp3", "static")
+   winSound = love.audio.newSource("src/assets/music/VictorySound.mp3", "static")
       
    love.mouse.setVisible(true)
 
@@ -60,7 +63,7 @@ function love.load()
    -- time in seconds after which a new ball spawns
    ballSpawnThreshold = 0.3
 
-   -- gameMode may be one of {"play", "pause", "edit", "delete"}
+   -- gameMode may be one of {"play", "pause", "edit", "delete", "win", "lose"}
    gameMode = "edit"
    -- Game objects
 
@@ -107,9 +110,11 @@ function love.load()
    end
 
    currentScore = 0
-   gameSeconds = 60
+   gameSeconds = 5
 
-   
+   positiveScoreFactor = 50
+   lowScorePenaltyFactor = 50
+   highScorePenaltyFactor = 100
 end
 
 function love.update(dt)
@@ -126,6 +131,18 @@ function love.update(dt)
 
       -- generate a ball
       time = love.timer.getTime()
+      gameSeconds = gameSeconds - love.timer.getDelta()
+      
+      if gameSeconds <= 0 then
+	 if hasWon() then
+	    gameMode = "win"
+	    mainMusic:stop()
+	    winSound:play()
+	 else
+	    gameMode = "lose"
+	    mainMusic:stop()
+	 end
+      end
       
       if lastTime then
 	 timeElapsed = timeElapsed + (time - lastTime)
@@ -143,7 +160,6 @@ function love.update(dt)
       end
 
       lastTime = time
-      
    end
 end
 
@@ -169,13 +185,13 @@ function love.mousepressed(x, y, button, istouch, presses)
 		  -- first case: a cell with a reference color
 		  if grid.referenceCells[i][j] then
 		     if grid.referenceCells[i][j]== balls[k].color then
-			currentScore = currentScore + 50
+			currentScore = currentScore + positiveScoreFactor
 		     else
-			currentScore = currentScore - 100
+			currentScore = currentScore - highScorePenaltyFactor
 		     end
 		  else
 		     -- otherwise: an empty cell was clicked
-		     currentScore = currentScore - 50
+		     currentScore = currentScore - lowScorePenaltyFactor
 		  end
 	       end
 	       
@@ -207,48 +223,75 @@ function love.mousepressed(x, y, button, istouch, presses)
 end
 
 function love.draw()
-   -- static images
-   love.graphics.draw(backgroundImage)
-   
-   for _,button in pairs(buttons) do
-      button:draw()
-   end
-
-   if gameMode == "edit" or gameMode == "delete" then
-      for _,button in pairs(colorButtons) do
+   if gameMode == "lose" then
+      love.graphics.clear(1,1,1)
+      drawCenteredText(350, 200, 50, 100, "YOU LOSE. SKILL ISSUE")
+   elseif gameMode == "win" then
+      love.graphics.clear(1,1,1)
+      love.graphics.draw(endingImage)
+      drawCenteredText(350, 200, 50, 100, "YOU WIN. CONGRATS")
+   else 
+      -- static images
+      love.graphics.draw(backgroundImage)
+      
+      for _,button in pairs(buttons) do
 	 button:draw()
       end
 
-      deleteButton:draw()
+      if gameMode == "edit" or gameMode == "delete" then
+	 for _,button in pairs(colorButtons) do
+	    button:draw()
+	 end
+
+	 deleteButton:draw()
+      end
+      
+      grid:draw()
+      
+      -- Draw the circle.
+      for _,ball in pairs(balls) do
+	 ball:draw()
+      end   
+
+
+      if gameMode == "play" then
+	 -- Draw image on mouse cursor
+	 love.graphics.draw(cursorImage, love.mouse.getX()-cursorImage:getHeight()/2, love.mouse.getY()-cursorImage:getWidth()/2)      
+      end
+
+      --if gameMode == "play" or gameMode == "pause" then
+
+      --end
+      
+      drawCenteredText(350, 30, 100, 50, "SCORE: " .. tostring(currentScore))
+      drawCenteredText(500, 30, 100, 50, "TIME: " .. tostring(math.floor(gameSeconds)))
    end
-   
-   grid:draw()
-   
-   -- Draw the circle.
-   for _,ball in pairs(balls) do
-      ball:draw()
-   end   
-
-
-   if gameMode == "play" then
-      -- Draw image on mouse cursor
-      love.graphics.draw(cursorImage, love.mouse.getX()-cursorImage:getHeight()/2, love.mouse.getY()-cursorImage:getWidth()/2)      
-   end
-
-   --if gameMode == "play" or gameMode == "pause" then
-
-   --end
-   
-   drawCenteredText(350, 30, 100, 50, "SCORE: " .. tostring(currentScore))
-   drawCenteredText(500, 30, 100, 50, "TIME: " .. tostring(gameSeconds))
 end
 
-function drawCenteredText(rectX, rectY, rectWidth, rectHeight, text)
+function drawCenteredText(rectX, rectY, rectWidth, rectHeight, text, color)
    love.graphics.push("all")
-   love.graphics.setColor(0,0,0)
+   if color then
+      love.graphics.setColor(color.r, color.g, color.b, color.a)
+   else
+      love.graphics.setColor(0,0,0)
+   end
    local font       = love.graphics.getFont()
    local textWidth  = font:getWidth(text)
    local textHeight = font:getHeight()
    love.graphics.print(text, rectX+rectWidth/2, rectY+rectHeight/2, 0, 1, 1, textWidth/2, textHeight/2)
    love.graphics.pop()
+end
+
+
+function hasWon()
+   maxPoints = 0
+   for i=1,grid.width do
+      for j=1,grid.height do
+	 if cell then
+	    maxPoints = maxPoints + 1
+	 end
+      end
+   end
+   maxPoints = maxPoints * positiveScoreFactor
+   return currentScore >= maxPoints*0.9
 end
