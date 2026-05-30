@@ -11,6 +11,7 @@ config = {
       {r=1, g=0, b=0, a=1}, -- red
       {r=0, g=1, b=0, a=1}, -- green
       {r=0, g=0, b=1, a=1}, -- red
+      {r=1, g=1, b=0, a=1}, -- yellow
    }
 }
 
@@ -26,8 +27,12 @@ function love.load()
    gridXOffset, gridYOffset = config.windowWidth/2-gridPixelWidth/2, config.windowHeight/2-gridPixelHeight/2
 
    grid = Grid.new(gridXOffset, gridYOffset, 8, 8, 50)
-   
+   --grid = Grid.loadFromFile("src/assets/layout-1.grid")
    cursorImage = love.graphics.newImage("src/assets/mirino.png", {dpiscale=2})
+   backgroundImage = love.graphics.newImage("src/assets/canva.png", {dpiscale=0.75})
+   font = love.graphics.newFont("src/assets/fonts/Undak-KVA3y.otf", 24)
+   love.graphics.setFont(font)
+   
    love.mouse.setVisible(true)
 
    -- One meter is 32px in physics engine
@@ -48,7 +53,7 @@ function love.load()
    time = 0
    lastTime = 0
    -- time in seconds after which a new ball spawns
-   ballSpawnThreshold = 1
+   ballSpawnThreshold = 0.3
 
    -- gameMode may be one of {"play", "pause", "edit", "delete"}
    gameMode = "edit"
@@ -91,6 +96,7 @@ function love.load()
       b = Button.new(nil, 50, (i+1)*50, 50, 50, color) -- colored buttons
       b:registerCallback(function (self)
 	    editingColor = color
+	    gameMode = "edit"
       end)
       table.insert(colorButtons, b)
    end
@@ -194,6 +200,9 @@ function love.mousepressed(x, y, button, istouch, presses)
 end
 
 function love.draw()
+   -- static images
+   love.graphics.draw(backgroundImage)
+   
    for _,button in pairs(buttons) do
       button:draw()
    end

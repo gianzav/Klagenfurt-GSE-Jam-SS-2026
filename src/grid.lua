@@ -116,6 +116,7 @@ function Grid:addReferenceCell(x,y,color)
       local squareY = math.floor((y-self.y) / self.cellSize) + 1
       if squareX >= 1 and squareX <= self.height and
 	 squareY >= 1 and squareY <= self.width then
+	 
 	 self.referenceCells[squareX][squareY] = color
 	 return true
       end
