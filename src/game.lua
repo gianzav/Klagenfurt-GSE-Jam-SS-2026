@@ -18,9 +18,8 @@ function love.load()
    gridXOffset, gridYOffset = canvasWidth/2-gridPixelWidth/2, canvasHeight/2-gridPixelHeight/2
 
 
-   -- grid = Grid.new(gridXOffset, gridYOffset, 8, 8, 50)
-   grid = Grid.loadFromFile("src/assets/blue.grid")
-
+   grid = Grid.new(gridXOffset, gridYOffset, 8, 8, 50)
+   
    cursorImage = love.graphics.newImage("src/assets/mirino.png", {dpiscale=2})
    love.mouse.setVisible(false)
 
