@@ -39,9 +39,16 @@ function love.load()
    end
    
    ballRadius = 25
-   bodies = {}
+   balls = {}
+   colors = {
+      {r=1, g=0, b=0, a=1}, -- red
+      {r=0, g=1, b=0, a=1}, -- green
+      {r=0, g=0, b=1, a=1}, -- red
+   }
+   
    for i=1,gridDim do
       -- Create a Body for the circle
+      
       body = love.physics.newBody(fallColumns[i], (i-1)*50+gridXOffset+ballRadius, gridYOffset, "dynamic")
       
       -- Attatch a shape to the body.
@@ -53,15 +60,10 @@ function love.load()
       -- Calculate the mass of the body based on attatched shapes.
       -- This gives realistic simulations.
       body:setMassData(circle_shape:computeMass( 1 ))
-      table.insert(bodies, body)
+      randomColor = math.random(1,#colors)
+      ball = Ball.new(colors[randomColor], 25, body)
+      table.insert(balls, ball)
    end
-   
-   -- Load the image of the ball.
-   ball = love.graphics.newCanvas(50,50)
-   love.graphics.setCanvas(ball)
-   love.graphics.setColor(1,0,0,1) -- Light gray color
-   love.graphics.circle("fill", 25, 25, 25)
-   love.graphics.setCanvas()
 end
 
 function love.update(dt)
@@ -76,11 +78,11 @@ function love.mousepressed(x, y, button, istouch, presses)
 	 saveButton:runCallbacks()
       end
 
-      for k,body in pairs(bodies) do
+      for k,body in pairs(balls) do
 	 if x >= body:getX()-25 and x <= body:getX()+25 and
 	    y >= body:getY()-25 and y <= body:getY()+25 then
 	    grid:selectCell(x,y)
-	    bodies[k] = nil
+	    balls[k] = nil
 	 end
       end
 
@@ -94,8 +96,8 @@ function love.draw()
    -- ball:draw()
 
    -- Draw the circle.
-   for _,body in pairs(bodies) do
-      love.graphics.draw(ball,body:getX(), body:getY(), body:getAngle(),1,1,25,25)
+   for _,ball in pairs(balls) do
+      ball:draw()
    end
    
    -- Draw image on mouse cursor
