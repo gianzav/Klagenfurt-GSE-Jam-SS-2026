@@ -28,7 +28,6 @@ function love.load()
    cursorImage = love.graphics.newImage("src/assets/mirino.png", {dpiscale=2})
    love.mouse.setVisible(false)
 
-
    -- One meter is 32px in physics engine
    meter = 32
    love.physics.setMeter(meter)
@@ -40,38 +39,44 @@ function love.load()
       table.insert(fallColumns, love.physics.newWorld(0, 9.81*meter*speedup, true))
    end
    
-   ballRadius = 25
    balls = {}
-   colors = {
+   possibleBallColors = {
       {r=1, g=0, b=0, a=1}, -- red
       {r=0, g=1, b=0, a=1}, -- green
       {r=0, g=0, b=1, a=1}, -- red
    }
-   
-   for i=1,gridDim do
-      -- Create a Body for the circle
-      
-      body = love.physics.newBody(fallColumns[i], (i-1)*50+gridXOffset+ballRadius, gridYOffset, "dynamic")
-      
-      -- Attatch a shape to the body.
-      circle_shape = love.physics.newCircleShape(0,0,25)
-      
-      -- Create fixture between body and shape
-      fixture = love.physics.newFixture(body, circle_shape)
 
-      -- Calculate the mass of the body based on attatched shapes.
-      -- This gives realistic simulations.
-      body:setMassData(circle_shape:computeMass( 1 ))
-      randomColor = math.random(1,#colors)
-      ball = Ball.new(colors[randomColor], 25, body)
-      table.insert(balls, ball)
-   end
+   timeElapsed = 0
+   time = 0
+   lastTime = 0
+
+   ballSpawnThreshold = 0.5
 end
 
 function love.update(dt)
    for _,column in pairs(fallColumns) do
       column:update(dt)
    end
+
+   -- generate a ball
+   time = love.timer.getTime()
+   
+   if lastTime then
+      timeElapsed = timeElapsed + (time - lastTime)
+   else
+      timeElapsed = 0
+   end
+   
+   if timeElapsed >= ballSpawnThreshold then
+      column = math.random(1,#fallColumns)
+      table.insert(balls, generateBall(fallColumns[column],
+				       (column-1)*50+gridXOffset,
+				       gridYOffset-60,
+				       possibleBallColors))
+      timeElapsed = 0
+   end
+
+   lastTime = time
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
@@ -88,8 +93,6 @@ function love.mousepressed(x, y, button, istouch, presses)
 	    balls[k] = nil
 	 end
       end
-
-      -- show elf on the clicked point
    end
 end
 
@@ -104,4 +107,24 @@ function love.draw()
 
    -- Draw image on mouse cursor
    love.graphics.draw(cursorImage, love.mouse.getX()-cursorImage:getHeight()/2, love.mouse.getY()-cursorImage:getWidth()/2)
+end
+
+function generateBall(world, x, y, colors)
+   local ballRadius = 25
+   
+   -- Create a Body for the circle
+   body = love.physics.newBody(world, x+ballRadius, y, "dynamic")
+   
+   -- Attatch a shape to the body.
+   circle_shape = love.physics.newCircleShape(0,0,25)
+   
+   -- Create fixture between body and shape
+   fixture = love.physics.newFixture(body, circle_shape)
+
+   -- Calculate the mass of the body based on attatched shapes.
+   -- This gives realistic simulations.
+   body:setMassData(circle_shape:computeMass( 1 ))
+   randomColor = math.random(1, #colors)
+   ball = Ball.new(colors[randomColor], 25, body)
+   return ball
 end
