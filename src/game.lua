@@ -240,7 +240,7 @@ function love.draw()
    --end
    
    drawCenteredText(350, 30, 100, 50, "SCORE: " .. tostring(currentScore))
-   drawCenteredText(350, 30, 100, 50, "TIME: " .. tostring(gameSeconds))
+   drawCenteredText(500, 30, 100, 50, "TIME: " .. tostring(gameSeconds))
 end
 
 function drawCenteredText(rectX, rectY, rectWidth, rectHeight, text)
