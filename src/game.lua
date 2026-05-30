@@ -3,17 +3,27 @@ require("grid")
 require("ball")
 Talkies = require("talkies")
 
+
+config = {
+   windowWidth = 800,
+   windowHeight = 600,
+   colors =  {
+      {r=1, g=0, b=0, a=1}, -- red
+      {r=0, g=1, b=0, a=1}, -- green
+      {r=0, g=0, b=1, a=1}, -- red
+   }
+}
+
 function love.load()
    -- General config
-   canvasWidth, canvasHeight = 800, 600
 
    love.graphics.setBackgroundColor(1,1,1)
-   love.window.setMode(800, 600, {resizable=false, vsync=0, minwidth=800, minheight=600})
+   love.window.setMode(config.windowWidth, config.windowHeight, {resizable=false, vsync=0, minwidth=800, minheight=600})
    gridDim = 8
    cellSize = 50 -- Width and height of cells.
    gridWidth, gridHeigth = 8,8
    gridPixelWidth, gridPixelHeight = gridWidth*cellSize, gridHeigth*cellSize   
-   gridXOffset, gridYOffset = canvasWidth/2-gridPixelWidth/2, canvasHeight/2-gridPixelHeight/2
+   gridXOffset, gridYOffset = config.windowWidth/2-gridPixelWidth/2, config.windowHeight/2-gridPixelHeight/2
 
    grid = Grid.new(gridXOffset, gridYOffset, 8, 8, 50)
    
@@ -31,13 +41,8 @@ function love.load()
       table.insert(fallColumns, love.physics.newWorld(0, 9.81*meter*speedup, true))
    end
    
+   colors = config.colors
    balls = {}
-   colors = {
-      {r=1, g=0, b=0, a=1}, -- red
-      {r=0, g=1, b=0, a=1}, -- green
-      {r=0, g=0, b=1, a=1}, -- red
-   }
-
    -- timer data
    timeElapsed = 0
    time = 0
@@ -90,7 +95,8 @@ function love.load()
       table.insert(colorButtons, b)
    end
 
-
+   currentScore = 0
+   
 end
 
 function love.update(dt)
@@ -142,7 +148,24 @@ function love.mousepressed(x, y, button, istouch, presses)
 	    if x >= ball:getX()-25 and x <= ball:getX()+25 and
 	       y >= ball:getY()-25 and y <= ball:getY()+25 then
 	       
-	       grid:selectCell(x,y,ball.color)
+	       selected = grid:selectCell(x,y,ball.color)
+
+	       -- change the score
+	       if selected then
+		  i,j = grid:getCellFromCoordinates(x,y)
+		  -- first case: a cell with a reference color
+		  if grid.referenceCells[i][j] then
+		     if grid.referenceCells[i][j]== balls[k].color then
+			currentScore = currentScore + 50
+		     else
+			currentScore = currentScore - 100
+		     end
+		  else
+		     -- otherwise: an empty cell was clicked
+		     currentScore = currentScore - 50
+		  end
+	       end
+	       
 	       balls[k] = nil
 	    end
 	 end
@@ -188,11 +211,27 @@ function love.draw()
    -- Draw the circle.
    for _,ball in pairs(balls) do
       ball:draw()
-   end
+   end   
+
 
    if gameMode == "play" then
       -- Draw image on mouse cursor
-      love.graphics.draw(cursorImage, love.mouse.getX()-cursorImage:getHeight()/2, love.mouse.getY()-cursorImage:getWidth()/2)
+      love.graphics.draw(cursorImage, love.mouse.getX()-cursorImage:getHeight()/2, love.mouse.getY()-cursorImage:getWidth()/2)      
    end
 
+   --if gameMode == "play" or gameMode == "pause" then
+
+   --end
+   
+   drawCenteredText(350, 30, 100, 50, "SCORE: " .. tostring(currentScore))
+end
+
+function drawCenteredText(rectX, rectY, rectWidth, rectHeight, text)
+   love.graphics.push("all")
+   love.graphics.setColor(0,0,0)
+   local font       = love.graphics.getFont()
+   local textWidth  = font:getWidth(text)
+   local textHeight = font:getHeight()
+   love.graphics.print(text, rectX+rectWidth/2, rectY+rectHeight/2, 0, 1, 1, textWidth/2, textHeight/2)
+   love.graphics.pop()
 end
