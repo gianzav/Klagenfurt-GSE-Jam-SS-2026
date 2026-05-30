@@ -25,10 +25,52 @@ function love.load()
    ball = Ball.new({r=1, g=1, b=1, a=1}, 50, 50, 16)
 
    cursorImage = love.graphics.newImage("src/assets/elf192.192.png", {dpiscale=2})
+
+
+   -- One meter is 32px in physics engine
+   love.physics.setMeter( 32 )
+
+   -- Create a world with standard gravity
+   world = love.physics.newWorld(0, 9.81*32, true)
+
+   -- Create the ground body at (0, 0) static
+   ground = love.physics.newBody(world, 0, 0, "static")
+   
+   -- Create the ground shape at (400,500) with size (600,10).
+   ground_shape = love.physics.newRectangleShape(gridPixelWidth, gridPixelHeight+gridYOffset, 600, 0)
+
+   -- Create fixture between body and shape
+   ground_fixture = love.physics.newFixture(ground, ground_shape)
+
+   ballRadius = 25
+   bodies = {}
+   for i=1,gridDim do
+      -- Create a Body for the circle
+      body = love.physics.newBody(world, (i-1)*50+gridXOffset+ballRadius, gridYOffset, "dynamic")
+      
+      -- Attatch a shape to the body.
+      circle_shape = love.physics.newCircleShape(0,0,25)
+      
+      -- Create fixture between body and shape
+      fixture = love.physics.newFixture(body, circle_shape)
+
+      -- Calculate the mass of the body based on attatched shapes.
+      -- This gives realistic simulations.
+      body:setMassData(circle_shape:computeMass( math.random(1,10) ))
+      table.insert(bodies, body)
+   end
+   
+   -- Load the image of the ball.
+   ball = love.graphics.newCanvas(50,50)
+   love.graphics.setCanvas(ball)
+   love.graphics.setColor(1,0,0,1) -- Light gray color
+   love.graphics.circle("fill", 25, 25, 25)
+   love.graphics.setCanvas()
 end
 
-
-
+function love.update(dt)
+   world:update(dt)
+end
 
 function love.mousepressed(x, y, button, istouch, presses)
    if button == 1 then
@@ -45,8 +87,16 @@ end
 function love.draw()
    saveButton:draw()
    grid:draw()
-   ball:draw()
+   -- ball:draw()
+
+   -- Draws the ground.
+   love.graphics.polygon("line", ground:getWorldPoints(ground_shape:getPoints()))
+
+   -- Draw the circle.
+   for _,body in pairs(bodies) do
+      love.graphics.draw(ball,body:getX(), body:getY(), body:getAngle(),1,1,25,25)
+   end
    
    -- Draw image on mouse cursor
-   love.graphics.draw(cursorImage, love.mouse.getX()-cursorImage:getHeight()/2, love.mouse.getY()-cursorImage:getWidth()/2)
+   -- love.graphics.draw(cursorImage, love.mouse.getX()-cursorImage:getHeight()/2, love.mouse.getY()-cursorImage:getWidth()/2)
 end
