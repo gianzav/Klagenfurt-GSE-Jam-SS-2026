@@ -4,6 +4,7 @@ require("ball")
 require("edit-state")
 require("play-state")
 require("select-level-state")
+require("opening-state")
 
 function love.load()
    -- General config
@@ -41,12 +42,14 @@ function love.load()
 
    --grid = Grid.loadFromFile("src/assets/layout-1.grid")
    -- currentState may be one of {"play", "pause", "edit", "win", "lose"}
+   env["openingState"] = OpeningState.new(env)
    env["selectLevelState"] = SelectLevelState.new(env)
    env["editState"] = EditState.new(env)
    env["playState"] = PlayState.new(env)
    -- env.editState:load{playState = env.playState}
-   env.selectLevelState:load()
-   currentState = env.selectLevelState
+   -- env.selectLevelState:load()
+   env.openingState:load()
+   currentState = env.openingState
 end
 
 function love.update(dt)
@@ -59,7 +62,7 @@ end
 
 function love.draw()
    -- static images
-   love.graphics.draw(env.backgroundImage)
+   --love.graphics.draw(env.backgroundImage)
    -- env.grid:draw()
    currentState:draw()
 end

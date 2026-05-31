@@ -97,6 +97,7 @@ function EditState:update(dt)
 end
 
 function EditState:draw()
+   love.graphics.draw(self.env.backgroundImage)
    for _,button in pairs(self.colorButtons) do
       button:draw()
    end
@@ -106,6 +107,7 @@ function EditState:draw()
    end
    
    self.deleteButton:draw()
+
 end
 
 function EditState:unload()

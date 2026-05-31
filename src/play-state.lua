@@ -36,7 +36,7 @@ function PlayState:load(env, forceReload)
       self.cursorImage = love.graphics.newImage("src/assets/mirino.png", {dpiscale=2})
       self.ballImage = love.graphics.newImage("src/assets/goccia-bw.png", {dpiscale=3})
       self.splatSound = love.audio.newSource("src/assets/music/TRUESplatsound.mp3", "static")
-      
+
       self.balls = {}
 
       -- One meter is 32px in physics engine
@@ -173,6 +173,7 @@ function PlayState:update(dt)
 end
 
 function PlayState:draw()
+   love.graphics.draw(self.env.backgroundImage)
    self.grid:draw()
    -- Draw image on mouse cursor
    love.graphics.draw(self.cursorImage,
@@ -190,6 +191,7 @@ function PlayState:draw()
    
    drawCenteredText(350, 30, 100, 50, "SCORE: " .. tostring(self.currentScore))
    drawCenteredText(500, 30, 100, 50, "TIME: " .. tostring(math.floor(self.gameSeconds)))
+
 end
 
 function PlayState:unload()
