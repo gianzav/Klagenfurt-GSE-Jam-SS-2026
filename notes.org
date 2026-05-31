@@ -1,4 +1,4 @@
-* [Name of the game]
+* Little Paintelves
 
 Tema principale: Art Block
 
@@ -23,7 +23,7 @@ Artista/artigiano che dipinge e non riesce a dipingere piu'. Va a dormire. Duran
   Nei quadranti succedono le robe tipo SA: distruggere (colorare), costruire (nuovi pupini) e esplorare (prossima area in cui succederanno cose)
   Per vincere si deve resistere un certo numero di turni
   
-** TODO Gameplay [4/7]
+** TODO Gameplay [7/16]
 
 - Immagine stile nonogram di sfondo
 - Dall'alto cadono dei "gavettoni di colore"
@@ -33,15 +33,26 @@ Artista/artigiano che dipinge e non riesce a dipingere piu'. Va a dormire. Duran
 - Sfida a tempo, bisogna completare l'immagine o una certa percentuale
   
 *** DONE Mostrare la griglia
-**** TODO Mostrare la griglia sopra uno sfondo
+**** DONE Mostrare la griglia sopra uno sfondo
 *** DONE Rendere la griglia cliccabile
 *** DONE Far cadere i gavettoni
 *** DONE Colorare la griglia quando si clicca
-*** TODO Implementare il "tiro caricato"
-*** TODO Mostrare il mirino sul cursore
+# *** REMOVED Implementare il "tiro caricato"
+*** DONE Mostrare il mirino sul cursore
 *** TODO Menu iniziale
 **** TODO Seleziona livello
+***** TODO Lista dei file disponibili
 **** TODO Carica livello
 *** TODO Editor di livelli
 **** TODO Salvare i layout
 **** TODO Caricare i layout
+*** TODO Sistema per gestire scene
+*** TODO Scena opening
+*** DONE Timer per il livello
+*** DONE Gestire vittoria/sconfitta
+- E.g. in base al punteggio massimo possible, con una certa tolleranza
+*** TODO Randomizzare velocita' delle palline
+*** TODO Usare gli sprite per le palline
+*** TODO Elfo che si spiaccica quando una pallina viene colpita
+*** TODO Fare che a fine livello, in caso di vittoria, viene mostrata una versione fotorealistica dell'immagine
+** TODO Clip di gioco dove viene disegnata la casetta 
