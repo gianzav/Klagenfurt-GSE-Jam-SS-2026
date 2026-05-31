@@ -9,6 +9,7 @@ function EditState.new(env)
    self.grid = env.grid
    self.colors = env.colors
    self.playState = env.playState
+   self.env = env
    return self
 end
 
@@ -37,7 +38,7 @@ function EditState:load(env, forceReload)
       end
 
       self.saveButton = Button.new("Save", 200, 550, 200, 50)
-      self.saveButton:registerCallback(function (self)
+      self.saveButton:registerCallback(function (button)
 	    self.grid:saveToFile(os.date("%d-%m-%Y-%H-%M") .. ".grid")
       end)
 

@@ -6,7 +6,7 @@ function WinState.new(env)
    self.loaded = false
    return self
 end
-l
+
 function WinState:load(env, forceReload)
    if not self.loaded or forceReload then
       self.winSound = love.audio.newSource("src/assets/music/VictorySound.mp3", "static")
